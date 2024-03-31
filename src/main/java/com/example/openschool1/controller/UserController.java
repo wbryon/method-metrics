@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{userId}", produces = APPLICATION_JSON_VALUE)
-    public UserResponse findById(@PathVariable Integer userId) {
+    public UserResponse findById(@PathVariable Long userId) {
         return userService.findById(userId);
     }
 
@@ -33,13 +33,13 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{userId}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public UserResponse update(@PathVariable Integer userId, @RequestBody CreateUserRequest request) {
+    public UserResponse update(@PathVariable Long userId, @RequestBody CreateUserRequest request) {
         return userService.update(userId, request);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/{userId}", produces = APPLICATION_JSON_VALUE)
-    public void delete(@PathVariable Integer userId) {
+    public void delete(@PathVariable Long userId) {
         userService.delete(userId);
     }
 }

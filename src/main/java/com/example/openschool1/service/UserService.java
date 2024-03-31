@@ -2,23 +2,18 @@ package com.example.openschool1.service;
 
 import com.example.openschool1.dto.CreateUserRequest;
 import com.example.openschool1.dto.UserResponse;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
 public interface UserService {
 
-    @NotNull
-    UserResponse create(@NotNull CreateUserRequest request);
+    UserResponse create(CreateUserRequest request);
 
-    @NotNull
-    UserResponse update(@NotNull Integer userId, @NotNull CreateUserRequest request);
+    UserResponse update(Long userId, CreateUserRequest request);
 
-    void delete(@NotNull Integer userId);
+    void delete(Long userId);
 
-    @NotNull
     List<UserResponse> findAll();
 
-    @NotNull
-    UserResponse findById(@NotNull Integer userId);
+    UserResponse findById(Long userId);
 }
