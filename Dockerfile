@@ -1,18 +1,8 @@
-FROM openjdk:17 as build
+FROM openjdk:17
 
 WORKDIR /app
 
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-COPY src src
+COPY ./target/openschool1-1.0.0.jar app.jar
 
-RUN chmod +x mvnw
-
-RUN ./mvnw package -DskipTests
-
-FROM openjdk:17
-COPY --from=build /app/target/*.jar app.jar
-
-# Запустите приложение
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Команда для запуска приложения
+ENTRYPOINT ["java", "-jar", "app.jar"]
