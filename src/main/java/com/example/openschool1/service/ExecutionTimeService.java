@@ -1,14 +1,10 @@
 package com.example.openschool1.service;
 
-import com.example.openschool1.repository.ExecutionTimeRepository;
-import org.springframework.stereotype.Service;
+public interface ExecutionTimeService {
 
-@Service
-public class ExecutionTimeService {
+    void saveExecutionTime(String methodName, long executionTime, boolean isAsync);
 
-    private final ExecutionTimeRepository executionTimeRepository;
+    double getAverageExecutionTime(String methodName);
 
-    public ExecutionTimeService(ExecutionTimeRepository executionTimeRepository) {
-        this.executionTimeRepository = executionTimeRepository;
-    }
+    long getTotalCalls(String methodName);
 }
