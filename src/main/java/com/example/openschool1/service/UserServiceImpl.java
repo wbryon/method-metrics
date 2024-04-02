@@ -1,5 +1,7 @@
 package com.example.openschool1.service;
 
+import com.example.openschool1.aspect.TrackAsyncTime;
+import com.example.openschool1.aspect.TrackTime;
 import com.example.openschool1.dto.AddressResponse;
 import com.example.openschool1.dto.CreateAddressRequest;
 import com.example.openschool1.dto.CreateUserRequest;
@@ -20,10 +22,11 @@ import static java.util.Optional.ofNullable;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
+    @TrackTime
     public List<UserResponse> findAll() {
         return userRepository.findAll()
                 .stream()
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @TrackTime
     public UserResponse findById(Long userId) {
         return userRepository.findById(userId)
                 .map(this::buildUserResponse)
@@ -41,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @TrackAsyncTime
     public UserResponse create(CreateUserRequest request) {
         User user = buildUserRequest(request);
         return buildUserResponse(userRepository.save(user));
@@ -48,6 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @TrackAsyncTime
     public UserResponse update(Long userId, CreateUserRequest request) {
         User user =  userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not found"));
@@ -72,6 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @TrackAsyncTime
     public void delete(Long userId) {
         userRepository.deleteById(userId);
     }
