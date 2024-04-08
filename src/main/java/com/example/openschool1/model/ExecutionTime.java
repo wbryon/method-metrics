@@ -28,4 +28,11 @@ public class ExecutionTime {
     @Column
     private ZonedDateTime startTime;
 
+    public ExecutionTime(String methodName, long executionTime, boolean isAsync, ZonedDateTime startTime) {
+        this.methodName = methodName;
+        this.executionTime = executionTime;
+        this.isAsync = isAsync;
+        this.startTime = startTime;
+
+    }
 }
