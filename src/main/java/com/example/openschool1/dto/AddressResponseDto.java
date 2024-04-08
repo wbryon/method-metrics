@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class AddressResponse {
+public class AddressResponseDto {
     private String street;
     private String city;
     private String building;
