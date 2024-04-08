@@ -1,15 +1,15 @@
 package com.example.openschool1.controller;
 
-import com.example.openschool1.service.ExecutionTimeServiceImpl;
+import com.example.openschool1.service.ExecutionTimeService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/metrics")
 public class ExecutionTimeController {
 
-    private final ExecutionTimeServiceImpl executionTimeService;
+    private final ExecutionTimeService executionTimeService;
 
-    public ExecutionTimeController(ExecutionTimeServiceImpl executionTimeService) {
+    public ExecutionTimeController(ExecutionTimeService executionTimeService) {
         this.executionTimeService = executionTimeService;
     }
 

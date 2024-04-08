@@ -1,6 +1,6 @@
 package com.example.openschool1.aspect;
 
-import com.example.openschool1.service.ExecutionTimeServiceImpl;
+import com.example.openschool1.service.ExecutionTimeService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,9 +12,9 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @Aspect
 public class MethodExecutionTrackingAspect {
-    private final ExecutionTimeServiceImpl executionTimeService;
+    private final ExecutionTimeService executionTimeService;
 
-    public MethodExecutionTrackingAspect(ExecutionTimeServiceImpl executionTimeService) {
+    public MethodExecutionTrackingAspect(ExecutionTimeService executionTimeService) {
         this.executionTimeService = executionTimeService;
     }
 
