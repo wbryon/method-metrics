@@ -33,7 +33,7 @@ public class User {
     @Column(name = "age")
     private Integer age;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", foreignKey = @ForeignKey(name = "fk_users_address_id"))
     private Address address;
 

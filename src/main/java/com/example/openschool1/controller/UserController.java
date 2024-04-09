@@ -1,8 +1,9 @@
 package com.example.openschool1.controller;
 
-import com.example.openschool1.dto.CreateUserRequest;
-import com.example.openschool1.dto.UserResponse;
+import com.example.openschool1.dto.CreateUserRequestDto;
+import com.example.openschool1.dto.UserResponseDto;
 import com.example.openschool1.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +19,22 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<UserResponse> findAll() {
+    public List<UserResponseDto> findAll() {
         return userService.findAll();
     }
 
     @GetMapping(value = "/{userId}", produces = APPLICATION_JSON_VALUE)
-    public UserResponse findById(@PathVariable Long userId) {
+    public UserResponseDto findById(@PathVariable Long userId) {
         return userService.findById(userId);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public UserResponse create(@RequestBody CreateUserRequest request) {
+    public UserResponseDto create(@RequestBody @Valid CreateUserRequestDto request) {
         return userService.create(request);
     }
 
     @PatchMapping(value = "/{userId}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public UserResponse update(@PathVariable Long userId, @RequestBody CreateUserRequest request) {
+    public UserResponseDto update(@PathVariable Long userId, @RequestBody @Valid CreateUserRequestDto request) {
         return userService.update(userId, request);
     }
 

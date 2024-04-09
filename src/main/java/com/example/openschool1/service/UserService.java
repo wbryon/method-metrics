@@ -1,19 +1,19 @@
 package com.example.openschool1.service;
 
-import com.example.openschool1.dto.CreateUserRequest;
-import com.example.openschool1.dto.UserResponse;
+import com.example.openschool1.dto.CreateUserRequestDto;
+import com.example.openschool1.dto.UserResponseDto;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserResponse create(CreateUserRequest request);
+    UserResponseDto create(CreateUserRequestDto request);
 
-    UserResponse update(Long userId, CreateUserRequest request);
+    UserResponseDto update(Long userId, CreateUserRequestDto request);
 
     void delete(Long userId);
 
-    List<UserResponse> findAll();
+    List<UserResponseDto> findAll();
 
-    UserResponse findById(Long userId);
+    UserResponseDto findById(Long userId);
 }

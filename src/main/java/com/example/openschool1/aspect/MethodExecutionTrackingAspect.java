@@ -1,9 +1,11 @@
 package com.example.openschool1.aspect;
 
 import com.example.openschool1.service.ExecutionTimeService;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Component
 @Aspect
+@Slf4j
 public class MethodExecutionTrackingAspect {
     private final ExecutionTimeService executionTimeService;
 
@@ -18,9 +21,20 @@ public class MethodExecutionTrackingAspect {
         this.executionTimeService = executionTimeService;
     }
 
-    @Around("@annotation(com.example.openschool1.aspect.TrackTime)")
+//    @Pointcut("execution(com.example.openschool1.dto.UserResponse *(..)) &&" +
+//            "@annotation(com.example.openschool1.aspect.TrackAsyncTime)")
+//    public void asyncRunningPointcut() {}
+
+    @Pointcut("@annotation(com.example.openschool1.aspect.TrackAsyncTime)")
+    public void asyncRunningPointcut() {}
+
+    @Pointcut("@annotation(com.example.openschool1.aspect.TrackTime)")
+    public void syncRunningPointcut() {}
+
+    @Around("syncRunningPointcut()")
     public Object trackTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
+        log.info("Синхронный запуск в MethodExecutionTrackingAspect");
         Object result = joinPoint.proceed();
         long timeTaken = System.currentTimeMillis() - startTime;
         String methodName = ((MethodSignature) joinPoint.getSignature()).getMethod().getName();
@@ -28,14 +42,15 @@ public class MethodExecutionTrackingAspect {
         return result;
     }
 
-    @Around("@annotation(com.example.openschool1.aspect.TrackAsyncTime)")
+@Around("asyncRunningPointcut()")
     public Object trackAsyncTime(ProceedingJoinPoint joinPoint) throws Throwable {
         CompletableFuture.runAsync(() -> {
             long startTime = System.currentTimeMillis();
             try {
+                log.info("Асинхронный запуск в MethodExecutionTrackingAspect");
                 joinPoint.proceed();
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                log.error("Ошибка асинхронной обработки в MethodExecutionTrackingAspect", e);
             }
             long timeTaken = System.currentTimeMillis() - startTime;
             String methodName = ((MethodSignature) joinPoint.getSignature()).getMethod().getName();

@@ -2,10 +2,11 @@ package com.example.openschool1.service;
 
 import com.example.openschool1.aspect.TrackAsyncTime;
 import com.example.openschool1.aspect.TrackTime;
-import com.example.openschool1.dto.AddressResponse;
-import com.example.openschool1.dto.CreateAddressRequest;
-import com.example.openschool1.dto.CreateUserRequest;
-import com.example.openschool1.dto.UserResponse;
+import com.example.openschool1.dto.AddressResponseDto;
+import com.example.openschool1.dto.CreateAddressRequestDto;
+import com.example.openschool1.dto.CreateUserRequestDto;
+import com.example.openschool1.dto.UserResponseDto;
+import com.example.openschool1.exception.NotFoundException;
 import com.example.openschool1.model.Address;
 import com.example.openschool1.model.User;
 import com.example.openschool1.repository.UserRepository;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     @TrackTime
-    public List<UserResponse> findAll() {
+    public List<UserResponseDto> findAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::buildUserResponse)
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     @TrackTime
-    public UserResponse findById(Long userId) {
+    public UserResponseDto findById(Long userId) {
         return userRepository.findById(userId)
                 .map(this::buildUserResponse)
                 .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not found"));
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @TrackAsyncTime
-    public UserResponse create(CreateUserRequest request) {
+    public UserResponseDto create(CreateUserRequestDto request) {
         User user = buildUserRequest(request);
         return buildUserResponse(userRepository.save(user));
     }
@@ -54,21 +55,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @TrackAsyncTime
-    public UserResponse update(Long userId, CreateUserRequest request) {
+    public UserResponseDto update(Long userId, CreateUserRequestDto request) {
         User user =  userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not found"));
+                .orElseThrow(() -> new NotFoundException("User with ID: " + userId + " not found"));
         userUpdate(user, request);
         return buildUserResponse(userRepository.save(user));
     }
 
-    private void userUpdate(User user, CreateUserRequest request) {
+    private void userUpdate(User user, CreateUserRequestDto request) {
         ofNullable(request.getLogin()).map(user::setLogin);
         ofNullable(request.getFirstName()).map(user::setFirstName);
         ofNullable(request.getMiddleName()).map(user::setMiddleName);
         ofNullable(request.getLastName()).map(user::setLastName);
         ofNullable(request.getAge()).map(user::setAge);
 
-        CreateAddressRequest addressRequest = request.getAddress();
+        CreateAddressRequestDto addressRequest = request.getAddress();
         if (addressRequest != null) {
             ofNullable(addressRequest.getBuilding()).map(user.getAddress()::setBuilding);
             ofNullable(addressRequest.getStreet()).map(user.getAddress()::setStreet);
@@ -80,24 +81,27 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @TrackAsyncTime
     public void delete(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User with ID: " + userId + " not found");
+        }
         userRepository.deleteById(userId);
     }
 
-    private UserResponse buildUserResponse(User user) {
-        return new UserResponse()
+    private UserResponseDto buildUserResponse(User user) {
+        return new UserResponseDto()
                 .setId(user.getId())
                 .setLogin(user.getLogin())
                 .setAge(user.getAge())
                 .setFirstName(user.getFirstName())
                 .setMiddleName(user.getMiddleName())
                 .setLastName(user.getLastName())
-                .setAddress(new AddressResponse()
+                .setAddress(new AddressResponseDto()
                         .setCity(user.getAddress().getCity())
                         .setBuilding(user.getAddress().getBuilding())
                         .setStreet(user.getAddress().getStreet()));
     }
 
-    private User buildUserRequest(CreateUserRequest request) {
+    private User buildUserRequest(CreateUserRequestDto request) {
         return new User()
                 .setLogin(request.getLogin())
                 .setAge(request.getAge())
