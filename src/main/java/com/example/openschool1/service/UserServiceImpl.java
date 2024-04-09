@@ -1,7 +1,7 @@
 package com.example.openschool1.service;
 
-import com.example.openschool1.aspect.TrackAsyncTime;
-import com.example.openschool1.aspect.TrackTime;
+import com.example.openschool1.annotation.TrackAsyncTime;
+import com.example.openschool1.annotation.TrackTime;
 import com.example.openschool1.dto.AddressResponseDto;
 import com.example.openschool1.dto.CreateAddressRequestDto;
 import com.example.openschool1.dto.CreateUserRequestDto;

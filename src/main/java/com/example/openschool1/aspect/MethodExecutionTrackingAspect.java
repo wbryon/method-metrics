@@ -21,14 +21,10 @@ public class MethodExecutionTrackingAspect {
         this.executionTimeService = executionTimeService;
     }
 
-//    @Pointcut("execution(com.example.openschool1.dto.UserResponse *(..)) &&" +
-//            "@annotation(com.example.openschool1.aspect.TrackAsyncTime)")
-//    public void asyncRunningPointcut() {}
-
-    @Pointcut("@annotation(com.example.openschool1.aspect.TrackAsyncTime)")
+    @Pointcut("@annotation(com.example.openschool1.annotation.TrackAsyncTime)")
     public void asyncRunningPointcut() {}
 
-    @Pointcut("@annotation(com.example.openschool1.aspect.TrackTime)")
+    @Pointcut("@annotation(com.example.openschool1.annotation.TrackTime)")
     public void syncRunningPointcut() {}
 
     @Around("syncRunningPointcut()")
