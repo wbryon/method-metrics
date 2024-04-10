@@ -7,11 +7,13 @@ import com.example.openschool1.dto.CreateAddressRequestDto;
 import com.example.openschool1.dto.CreateUserRequestDto;
 import com.example.openschool1.dto.UserResponseDto;
 import com.example.openschool1.exception.NotFoundException;
+import com.example.openschool1.exception.UserAlreadyExistsException;
 import com.example.openschool1.model.Address;
 import com.example.openschool1.model.User;
 import com.example.openschool1.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,15 +43,19 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto findById(Long userId) {
         return userRepository.findById(userId)
                 .map(this::buildUserResponse)
-                .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User with ID: " + userId + " not found"));
     }
 
     @Override
     @Transactional
     @TrackAsyncTime
     public UserResponseDto create(CreateUserRequestDto request) {
-        User user = buildUserRequest(request);
-        return buildUserResponse(userRepository.save(user));
+        try {
+            User user = buildUserRequest(request);
+            return buildUserResponse(userRepository.save(user));
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistsException("User with login \"" + request.getLogin() + "\" is already exists");
+        }
     }
 
     @Override
@@ -58,8 +64,13 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto update(Long userId, CreateUserRequestDto request) {
         User user =  userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with ID: " + userId + " not found"));
+        if (userRepository.existsByLoginAndIdNot(request.getLogin(), userId)) {
+            throw new UserAlreadyExistsException("User with login \"" + request.getLogin() + "\" already exists");
+        }
         userUpdate(user, request);
-        return buildUserResponse(userRepository.save(user));
+        userRepository.save(user);
+
+        return buildUserResponse(user);
     }
 
     private void userUpdate(User user, CreateUserRequestDto request) {

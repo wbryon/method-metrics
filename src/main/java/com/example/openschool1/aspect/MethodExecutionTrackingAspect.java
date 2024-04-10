@@ -40,18 +40,14 @@ public class MethodExecutionTrackingAspect {
 
 @Around("asyncRunningPointcut()")
     public Object trackAsyncTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        CompletableFuture.runAsync(() -> {
-            long startTime = System.currentTimeMillis();
-            try {
-                log.info("Асинхронный запуск в MethodExecutionTrackingAspect");
-                joinPoint.proceed();
-            } catch (Throwable e) {
-                log.error("Ошибка асинхронной обработки в MethodExecutionTrackingAspect", e);
-            }
-            long timeTaken = System.currentTimeMillis() - startTime;
-            String methodName = ((MethodSignature) joinPoint.getSignature()).getMethod().getName();
-            executionTimeService.saveExecutionTime(methodName, timeTaken, true);
-        });
-        return joinPoint.proceed();
+    long startTime = System.currentTimeMillis();
+    log.info("Асинхронный запуск в MethodExecutionTrackingAspect");
+    Object result = joinPoint.proceed();
+    long timeTaken = System.currentTimeMillis() - startTime;
+    CompletableFuture.runAsync(() -> {
+        String methodName = ((MethodSignature) joinPoint.getSignature()).getMethod().getName();
+        executionTimeService.saveExecutionTime(methodName, timeTaken, true);
+    });
+    return result;
     }
 }
